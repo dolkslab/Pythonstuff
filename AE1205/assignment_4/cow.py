@@ -28,9 +28,9 @@ class cow_sprite:
         self.phi = phi_start # both angles taken in as degrees, but stored as radians
         self.phi_stop = math.radians(phi_stop)
         self.arm_pos = init_pos
-        self.elas_pos = init_pos + np.array([0, R])
-        
+        self.elas_pos = init_pos + np.array([0, R]) 
         self.pos = init_pos + np.array([-R*math.cos(phi_start), R*math.sin(phi_start)])
+        
         #Spring values
         self.l_elas = l_elas
         self.k_elas = k_elas
@@ -78,9 +78,10 @@ class cow_sprite:
 
 
 
+        if self.state == 0:
+            self.pos = self.arm_pos + np.array([-self.arm_length*math.cos(self.phi), self.arm_length*math.sin(self.phi)]) 
 
-
-        if self.state == 1:
+        elif self.state == 1:
             F_elas = (self.l_elas-cst_math.mag(self.pos-self.elas_pos))*self.k_elas*cst_math.normalize(self.pos-self.elas_pos)
             F_tot = F_elas
 
@@ -109,18 +110,21 @@ class cow_sprite:
 
         return (math.degrees(self.phi), self.pos, self.v)
 
-    def reset(self, init_pos):
-        self.pos = init_pos
+    def reset(self, phi_start, init_pos):
+        
+        self.arm_pos = init_pos
+        self.elas_pos = init_pos + np.array([0, self.arm_length]) 
+        self.pos = init_pos + np.array([-self.arm_length*math.cos(phi_start), self.arm_length*math.sin(phi_start)])
 
         self.a = np.array([0.,0.])
         self.v = np.array([0.,0.])
         self.phi = 0.
-        self.phi_vel = 0
-        self.phi_acc = 0
+        self.phi_vel = 0.
+        self.phi_acc = 0.
 
 
         self.arm_pos = init_pos + np.array([self.arm_length, 0])
         self.elas_pos = init_pos + np.array([self.arm_length, self.arm_length])
 
-        self.state = 1.
+        self.state = 0.
         self.trace = []

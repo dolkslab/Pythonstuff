@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import numpy as np #same
 import custom_math as cst_math # this might not be needed
 import pygame
@@ -9,8 +11,8 @@ def main():
     """set up the main game loop"""
     pygame.init()
 
-    reso = (800, 400)
-    scale = 5. # pixels per meter
+    reso = (1600, 800)
+    scale = 10. # pixels per meter
     main_surface = pygame.display.set_mode(reso)
 
 
@@ -54,8 +56,14 @@ def main():
                 if event.key == pygame.K_ESCAPE:
                     running = False
                 if event.key == pygame.K_SPACE:
-                    game_state = 1
-                    cow_1.state = 1         
+                    if game_state == 0:
+                        game_state = 1
+                        cow_1.state = 1  
+                    elif game_state == 1:
+                        cow_1.reset(0.,np.array([30.,60.]))
+                        game_state = 0
+                        scale = 10
+                               
                     
 
 
@@ -74,15 +82,26 @@ def main():
         main_surface.blit(dt_text, (10,30))
 
 
-        if cow_1.state == 2 and scale >= 2:
-            scale -= dt
-        if game_state == 1:
+        if cow_1.state == 2 and scale >= 4:
+            scale -= dt*2
+            
+        if game_state == 0:
+                #for event in pygame.event.get():
+                #    if event.type == pygame.KEYDOWN:
+                #        if event.key == pygame.K_LEFT:
+                #            cow_1.phi -= 0.05
+                #        if event.key == pygame.K_RIGHT:
+                #            cow_1.phi += 0.05
+                #        print(cow_1.phi)
+            cow_info = cow_1.update(dt)
+            
+        elif game_state == 1:
 
             for i in range(calc_per_frame):
                 cow_info = cow_1.update(dt/calc_per_frame)
 
-            cow_text = font_1.render('phi: {}, pos: {}'.format(cow_info[0], cow_info[1]), True, color.black)
-            main_surface.blit(cow_text, (10,60))
+        cow_text = font_1.render('phi: {}, pos: {}'.format(cow_info[0], cow_info[1]), True, color.black)
+        main_surface.blit(cow_text, (10,60))
 
         
         cow_1.draw(main_surface, reso, scale, frame_count)
